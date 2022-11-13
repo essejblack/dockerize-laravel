@@ -49,5 +49,6 @@ for example adding some packages or changing versions you need to :
 2. `make build`
 3. `make up`
 
+however using `make` commands are not necessary you could use `docker compose` commands.
 
 Good Luck.
