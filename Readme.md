@@ -1,5 +1,5 @@
-# Laravel Docker
-Configs for mysql , laravel , nginx to dockerize project , Dockerfile - docker compose 
+# Dockerize Laravel
+Configs for mysql , laravel , phpmyadmin , nginx to dockerize project , Dockerfile - docker compose 
 
 Docker Compose Version : 3.8
 
