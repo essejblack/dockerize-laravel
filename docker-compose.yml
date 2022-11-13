@@ -1,0 +1,71 @@
+version: '3.8'
+
+# Volumes
+volumes:
+  dbdata:
+
+# Networks
+networks:
+  app-network:
+      # driver: bridge
+
+services:
+    # Database
+    mysql:
+        container_name: service-db
+        image: mysql
+        restart: always
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_DATABASE: "db_service"
+            MYSQL_ROOT_PASSWORD: "DockerRoot"
+    # Application
+    app:
+        build:
+            context: .
+            dockerfile: ./docker/app.dockerfile
+        restart: unless-stopped
+        tty: true
+        container_name: service-app
+        environment:
+            SERVICE_NAME: service-app
+            SERVICE_TAGS: dev
+            hosts: "mysql"
+        working_dir: /var/www
+        links:
+            - "mysql"
+        volumes:
+            - ./:/var/www
+            - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+        depends_on:
+            - "mysql"
+    # Web Server
+    web:
+        build: ./docker/nginx
+        working_dir: /var/www
+        restart: unless-stopped
+        container_name: service-webserver
+        tty: true
+        volumes:
+            - ./:/var/www
+        depends_on:
+            - "app"
+        ports:
+            - 8080:80
+    # Database management
+    pma:
+        image: phpmyadmin/phpmyadmin:latest
+        links:
+            - mysql
+        container_name: service-pma
+        restart: always
+        environment:
+            PMA_HOST: mysql
+            PMA_USER: "root"
+            PMA_PASSWORD: "DockerRoot"
+            PMA_ARBITRARY: 1
+        depends_on:
+            - mysql
+        ports:
+            - 8888:80
